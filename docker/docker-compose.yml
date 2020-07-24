@@ -114,6 +114,7 @@ services:
       - "traefik.protocol=https"
       - "traefik.docker.network=proxy"
       - "traefik.frontend.rule=HostRegexp:${COMPOSE_PROJECT_NAME:-default}.altis.dev,{subdomain:[a-z.-_]+}.${COMPOSE_PROJECT_NAME:-default}.altis.dev"
+      - "traefik.backend=nginx"
   xray:
     image: amazon/aws-xray-daemon:3.0.1
     ports:
@@ -187,6 +188,9 @@ services:
       - "traefik.protocol=http"
       - "traefik.docker.network=proxy"
       - "traefik.frontend.rule=HostRegexp:s3-${COMPOSE_PROJECT_NAME:-default}.altis.dev"
+      - "traefik.frontend.errors.networks.status=400-499"
+      - "traefik.frontend.errors.networks.backend=nginx"
+      - "traefik.frontend.errors.networks.query=/s3-{status}.html"
   s3-sync-to-host:
     image: minio/mc:RELEASE.2020-03-14T01-23-37Z
     restart: unless-stopped
@@ -213,6 +217,9 @@ services:
       - "traefik.protocol=http"
       - "traefik.docker.network=proxy"
       - "traefik.frontend.rule=HostRegexp:${COMPOSE_PROJECT_NAME:-default}.altis.dev,{subdomain:[a-z.-_]+}.${COMPOSE_PROJECT_NAME:-default}.altis.dev;PathPrefix:/tachyon;ReplacePathRegex:^/tachyon/(.*) /uploads/$$1"
+      - "traefik.frontend.errors.tachyon.status=400-499"
+      - "traefik.frontend.errors.tachyon.backend=nginx"
+      - "traefik.frontend.errors.tachyon.query=/tachyon-{status}.html"
     environment:
       AWS_REGION: us-east-1
       AWS_S3_BUCKET: s3-${COMPOSE_PROJECT_NAME:-default}
