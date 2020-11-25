@@ -193,7 +193,7 @@ class Docker_Compose_Generator {
 					'php',
 				],
 				'volumes' => [
-					"{$this->root_dir}:/usr/src/app:delegated",
+					"{$this->root_dir}/web:/usr/src/app:delegated",
 					'socket:/var/run/php-fpm',
 				],
 				'ports' => [
